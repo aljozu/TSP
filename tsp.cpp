@@ -37,7 +37,6 @@ std::vector<double> findLowestElementColumn(std::vector<std::vector<double>>& gr
 }
 
 void subtractNumberRow(std::vector<double>& array, double number) {
-    #pragma omp parallel for
     for (int i = 0; i < array.size(); i++) {
         array[i] -= number;
     }
@@ -45,13 +44,11 @@ void subtractNumberRow(std::vector<double>& array, double number) {
 
 void substract(std::vector<std::vector<double>>& graph, int pos, std::vector<double>& low){
     for (int i = 0; i < graph[0].size(); i++) {
-        #pragma omp critical
         graph[i][pos] -= low[pos];
     }
 }
 
 void subtractNumberColumn(std::vector<std::vector<double>>& graph, std::vector<double>& low) {
-    #pragma omp for
     for (int i = 0; i < low.size(); i++) {
         if(low[i] != 0){
             substract(graph, i, low);
@@ -62,7 +59,6 @@ void subtractNumberColumn(std::vector<std::vector<double>>& graph, std::vector<d
 double setInfDist(std::vector<std::vector<double>>& graph, int node1, int node2){
     auto cost = graph[node1][node2];
     graph[node2][node1] = INF;
-    #pragma omp for
     for(int i = 0; i < graph[0].size(); i++){
         graph[node1][i] = INF;
         graph[i][node2] = INF;
@@ -114,7 +110,6 @@ public:
     }
 };
 
-std::vector<double> prr;
 double TSPbranchandbound(std::vector<std::vector<double>> graph) {
     std::priority_queue<city*, std::vector<city*>, comp> pq;
     std::vector<double> cities;
@@ -133,13 +128,15 @@ double TSPbranchandbound(std::vector<std::vector<double>> graph) {
             return min->cost;
         }
 
-        #pragma omp for
+
+        #pragma omp parallel for shared(min)
         for(int j = 0; j < N; j++){
             if(min->costMatrix[i][j] != INF){
                 auto child = new city(min->costMatrix, min->path, j, 0, min->level+1);
                 child->path.push_back(j);
                 auto cnodes = setInfDist(child->costMatrix, i, j);
                 child->cost = min->cost + normalizar(child->costMatrix) + cnodes;
+                #pragma omp critical
                 pq.push(child);
             }
         }
@@ -153,12 +150,14 @@ int main() {
     int n = 10;  // numero de ciudades
 
     std::string nombreArchivo = "xqf131.tsp";
-    int N = 51;
+    omp_set_num_threads(4);
+    int N = 81;
     std::vector<std::vector<double>>matrix(N,std::vector<double>(N,INF));
     
     leerArchivo(nombreArchivo, matrix);
 
     /*Matriz de adyacencia de prueba*/
+    /*Resultado esperado: 28*/
     std::vector<std::vector<double>> ad =
     {
         { INF, 20, 30, 10, 11 },
@@ -169,7 +168,7 @@ int main() {
     };
 
     auto start = std::chrono::high_resolution_clock::now();	
-    auto ans = TSPbranchandbound(ad);
+    auto ans = TSPbranchandbound(matrix);
     auto finish = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = finish - start;
 	std::cout << std::fixed << std::setprecision(5) << elapsed.count() << std::endl;
