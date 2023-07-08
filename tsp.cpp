@@ -1,15 +1,8 @@
-#include <iostream>
-#include <vector>
-#include <limits>
-#include <cmath>
+#include<bits/stdc++.h>
 #include <omp.h>
-#include <algorithm>
-#include <fstream>
-#include <sstream>
-#include <numeric>
-#include <omp.h>
-#include <queue>
-
+#include "reader.h"
+#include <ctime>
+#include <chrono>
 const double INF = std::numeric_limits<double>::max();
 
 void print(std::vector<std::vector<double>> graph) {
@@ -19,6 +12,13 @@ void print(std::vector<std::vector<double>> graph) {
             else std::cout << j << "        ";
         }
         std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+void printPath(std::vector<double> graph) {
+    for(const auto& i: graph){
+        std::cout << i << " ";
     }
     std::cout << std::endl;
 }
@@ -86,15 +86,11 @@ double normalizar(std::vector<std::vector<double>>& graph){
     
     //Normalizar columnas
     auto low = findLowestElementColumn(graph);
-    /* costo += std::accumulate(low.begin(), low.end(), 0.0, [](double accumulator, double value) {
-            return accumulator + (value != INF ? value : 0);
-        }); */
-    for(auto x: low){
-        if(x != INF)
-            costo += x;
-    }
+    costo += std::accumulate(low.begin(), low.end(), 0.0, [](double accumulator, double value) {
+        return accumulator + (value != INF ? value : 0);
+    });
+
     subtractNumberColumn(graph, low);
-    //std::cout << "aaaaaaaa: " << costo << std::endl;
     return costo;
 }   
 
@@ -133,7 +129,7 @@ double TSPbranchandbound(std::vector<std::vector<double>> graph) {
         auto i = min->vertex;
         if(min->level == N - 1){
             min->path.push_back(i);
-            prr = min->path;
+            //printPath(min->path);
             return min->cost;
         }
 
@@ -143,10 +139,7 @@ double TSPbranchandbound(std::vector<std::vector<double>> graph) {
                 auto child = new city(min->costMatrix, min->path, j, 0, min->level+1);
                 child->path.push_back(j);
                 auto cnodes = setInfDist(child->costMatrix, i, j);
-                //print(child->costMatrix);
-                //std::cout << normalizar(child->costMatrix) << std::endl;
                 child->cost = min->cost + normalizar(child->costMatrix) + cnodes;
-                //std::cout << "sdaaaaa" << child->cost << std::endl;
                 pq.push(child);
             }
         }
@@ -159,20 +152,14 @@ double TSPbranchandbound(std::vector<std::vector<double>> graph) {
 int main() {
     int n = 10;  // numero de ciudades
 
-    std::vector<std::vector<double>> graph = {  
-        {INF,4.6,9.8,11.5,3.7,13.4,19.7,6.2,7.5,8.7},
-        {4.6,INF,4.3,7.7,7.7,17.5,13.8,2.9,5.8,5.2},
-        {9.8,4.3,INF,3.2,14.1,28.6,16.2,8.3,7.5,6.4},
-        {11.5,7.7,3.2,INF,15.2,27.4,17.8,9.4,10.2,9.1},
-        {3.7,7.7,14.1,15.2,INF,12.1,18.6,9.5,10.8,17.9},
-        {13.4,17.5,28.6,27.4,12.1,INF,28.7,18.2,19.9,27.7},
-        {19.7,13.8,16.2,17.8,18.6,28.7,INF,12.2,17.3,10.9},
-        {6.2,2.9,8.3,9.4,9.5,18.2,12.2,INF,7.2,4.5},
-        {7.5,5.8,7.5,10.2,10.8,19.9,17.3,7.2,INF,9.5},
-        {8.7,5.2,6.4,9.1,17.9,27.7,10.9,4.5,9.5,INF}
-    };
+    std::string nombreArchivo = "xqf131.tsp";
+    int N = 51;
+    std::vector<std::vector<double>>matrix(N,std::vector<double>(N,INF));
+    
+    leerArchivo(nombreArchivo, matrix);
 
-   std::vector<std::vector<double>> ad =
+    /*Matriz de adyacencia de prueba*/
+    std::vector<std::vector<double>> ad =
     {
         { INF, 20, 30, 10, 11 },
         { 15,  INF, 16,  4,  2 },
@@ -181,6 +168,10 @@ int main() {
         { 16,   4,   7,   16, INF }
     };
 
+    auto start = std::chrono::high_resolution_clock::now();	
     auto ans = TSPbranchandbound(ad);
+    auto finish = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = finish - start;
+	std::cout << std::fixed << std::setprecision(5) << elapsed.count() << std::endl;
     std::cout << ans << std::endl;
 }
