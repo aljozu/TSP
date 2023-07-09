@@ -153,7 +153,7 @@ Node<T>* TSPbranchandbound(std::vector<std::vector<T>> &adjacensyMatrix)
 
 
 int main() {
-    std::string nombreArchivo = "17nodos.txt";
+    std::string nombreArchivo = "15nodos.txt";
     
     auto matrix = leerArchivo<int>(nombreArchivo);
 
