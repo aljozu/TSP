@@ -4,30 +4,36 @@
 #include <vector>
 #include <sstream>
 
+const int INF = std::numeric_limits<int>::max();
+
 template <typename T>
-void leerArchivo(const std::string& nombreArchivo, std::vector<std::vector<T>>& datos) {
-    std::ifstream inputFile(nombreArchivo);
+std::vector<std::vector<T>> leerArchivo(const std::string& nombreArchivo) {
+    std::vector<std::vector<T>> matriz;
+    std::ifstream archivo(nombreArchivo);
 
-    if (!inputFile) {
-        std::cout << "Error al abrir el archivo." << std::endl;
-        return;
+    if (!archivo) {
+        std::cout << "No se pudo abrir el archivo: " << nombreArchivo << std::endl;
+        return matriz;
     }
 
-    std::string line;
-    while (std::getline(inputFile, line)) {
-        std::vector<int> fila;
-        std::istringstream iss(line);
+    std::string linea;
+    while (getline(archivo, linea)) {
+        std::vector<T> fila;
+        std::istringstream iss(linea);
+        T valor;
 
-        int i, j;
-        T w;
-        while (iss >> i >> j >> w) {
-            datos[i][j] = w;
-            //datos[j][i] = w;
+        while (iss >> valor) {
+            if(valor == 0)
+                fila.push_back(INF);
+            else
+                fila.push_back(valor);
         }
-        
+
+        matriz.push_back(fila);
     }
 
-    inputFile.close();
+    archivo.close();
+    return matriz;
 }
 
 
