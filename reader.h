@@ -36,4 +36,18 @@ std::vector<std::vector<T>> leerArchivo(const std::string& nombreArchivo) {
     return matriz;
 }
 
+template <typename T>
+void writeToCSV(const std::string& filename, std::pair<T, double>& data) {
+    std::ofstream file("output.csv", std::ios::app);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return;
+    }
 
+    // Write data
+    file << data.first << "," << data.second << std::endl;
+    
+
+    file.close();
+    std::cout << "Data written to " << filename << std::endl;
+}

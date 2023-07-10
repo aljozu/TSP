@@ -134,7 +134,7 @@ Node<T>* TSPbranchandbound(std::vector<std::vector<T>> &adjacensyMatrix)
             return min;
         }
 
-        #pragma omp parallel for shared(min)
+        #pragma omp parallel for shared(min) schedule(dynamic)
         for (int j = 0; j < N; j++)
         {
             if (min->matrix_reduced[i][j] != INF)
@@ -152,9 +152,12 @@ Node<T>* TSPbranchandbound(std::vector<std::vector<T>> &adjacensyMatrix)
 }
 
 
-int main() {
-    std::string nombreArchivo = "15nodos.txt";
-    
+int main(int argc, char *argv[]) {
+
+    std::string nombreArchivo = argv[1];
+    std::string outputFile = "output.csv";
+    int threads = std::stoi(argv[2]);
+    omp_set_num_threads(threads);
     auto matrix = leerArchivo<int>(nombreArchivo);
 
     /*Matriz de adyacencia de prueba*/
@@ -176,14 +179,14 @@ int main() {
         {7,  3,  8,  6,  INF}
     };
 
-        
-    //print(matrix);
     auto start = std::chrono::high_resolution_clock::now();	
     auto ans = TSPbranchandbound(matrix)->cost;
     auto finish = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = finish - start;
 	std::cout << std::fixed << std::setprecision(5) << elapsed.count() << std::endl;
     std::cout << ans << std::endl;
+    auto data = std::make_pair(threads, elapsed.count());
+    writeToCSV<int>(outputFile, data);
 }
 
 //https://people.sc.fsu.edu/~jburkardt/datasets/tsp/tsp.html

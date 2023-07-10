@@ -4,8 +4,6 @@
 #include <ctime>
 #include <chrono>
 
-const int INF = std::numeric_limits<int>::max();
-
 template <typename T>
 void print(std::vector<std::vector<T>> graph) {
     for(const auto& i: graph){
@@ -152,7 +150,7 @@ Node<T>* TSPbranchandbound(std::vector<std::vector<T>> &adjacensyMatrix)
 
 
 int main() {
-    std::string nombreArchivo = "5nodos.txt";
+    std::string nombreArchivo = "17nodos.txt";
     
     auto matrix = leerArchivo<int>(nombreArchivo);
 
