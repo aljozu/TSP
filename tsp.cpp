@@ -180,13 +180,13 @@ int main(int argc, char *argv[]) {
     };
 
     auto start = std::chrono::high_resolution_clock::now();	
-    auto ans = TSPbranchandbound(matrix)->cost;
+    auto ans = TSPbranchandbound(matrix);
     auto finish = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = finish - start;
 	std::cout << std::fixed << std::setprecision(5) << elapsed.count() << std::endl;
-    std::cout << ans << std::endl;
     auto data = std::make_pair(threads, elapsed.count());
     writeToCSV<int>(outputFile, data);
+    //writeMinPath<int>(ans->path, ans->cost);
 }
 
 //https://people.sc.fsu.edu/~jburkardt/datasets/tsp/tsp.html

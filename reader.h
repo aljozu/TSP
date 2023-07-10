@@ -51,3 +51,21 @@ void writeToCSV(const std::string& filename, std::pair<T, double>& data) {
     file.close();
     std::cout << "Data written to " << filename << std::endl;
 }
+
+template <typename T>
+void writeMinPath(std::vector<std::pair<T, T>> const &list, T cost) {
+    std::ofstream file("minPath.txt");
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file " << std::endl;
+        return;
+    }
+
+    // Write data
+    for (int i = 0; i < list.size(); i++)
+        file << list[i].first + 1 << " -> " << list[i].second + 1 << std::endl;
+    
+    file << "cost: " << cost << std::endl;
+
+    file.close();
+    std::cout << "Data written " << std::endl;
+}

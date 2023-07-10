@@ -2,6 +2,7 @@ CXX = g++
 CXXFLAGS = -std=c++11 -Wall -g -fopenmp
 PY = python3
 HEADER = header
+PLOT = plotter
 PROGRAM = tsp
 PARAMS = 2 3 4 5 6 7 8
 file := $(file)
@@ -29,3 +30,6 @@ run: $(PROGRAM)
 		./$(PROGRAM) $(file) $$param; \
 		echo "------------------------------"; \
 	done
+
+plot:
+	$(PY) $(PLOT).py
